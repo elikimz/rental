@@ -187,6 +187,7 @@
 
 // export default PaymentComponent;
 
+
 import React, { useState, useEffect } from "react";
 import {
   useCreatePaymentMutation,
@@ -195,21 +196,34 @@ import {
   useUpdatePaymentMutation,
   useDeletePaymentMutation,
 } from "./paymentsAPI";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
+
+interface Payment {
+  payment_id: number;
+  amount_paid: number;
+  payment_status: string;
+}
 
 const PaymentComponent: React.FC = () => {
-  const { data: payments, isLoading, error, refetch } = useGetAllPaymentsQuery();
+  const {
+    data: payments,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAllPaymentsQuery(undefined);
+
   const [createPayment] = useCreatePaymentMutation();
   const [updatePayment] = useUpdatePaymentMutation();
   const [deletePayment] = useDeletePaymentMutation();
 
-  const [paymentId, setPaymentId] = useState("");
+  const [paymentId, setPaymentId] = useState<number | "">("");
   const [amountPaid, setAmountPaid] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { data: singlePayment } = useGetPaymentByIdQuery(paymentId, { skip: !paymentId });
+  const { data: singlePayment } = useGetPaymentByIdQuery(paymentId, {
+    skip: !paymentId,
+  });
 
   useEffect(() => {
     if (singlePayment) {
@@ -236,8 +250,13 @@ const PaymentComponent: React.FC = () => {
   };
 
   const handleUpdatePayment = async () => {
-    if (!paymentId || isNaN(Number(paymentId)) || !amountPaid || isNaN(Number(amountPaid))) {
-      setErrorMessage("Please enter valid values");
+    if (!paymentId || isNaN(Number(paymentId))) {
+      setErrorMessage("Please enter a valid Payment ID");
+      return;
+    }
+
+    if (!amountPaid || isNaN(Number(amountPaid))) {
+      setErrorMessage("Please enter a valid amount");
       return;
     }
 
@@ -257,17 +276,26 @@ const PaymentComponent: React.FC = () => {
   };
 
   const handleDeletePayment = async (payment_id: number) => {
+    if (!payment_id) {
+      console.error("Error: Payment ID is undefined");
+      return;
+    }
+
     try {
       await deletePayment(payment_id).unwrap();
       setSuccessMessage(`Payment ${payment_id} deleted successfully`);
       refetch();
-    } catch {
-      setErrorMessage("Failed to delete payment");
+    } catch (error) {
+      console.error("Failed to delete payment:", error);
+      setErrorMessage(`Failed to delete payment: ${(error as { message?: string })?.message}`);
     }
   };
 
   if (isLoading) return <div className="text-center">Loading payments...</div>;
-  if (error) return <div className="text-center text-red-500">Error loading payments</div>;
+  if (error) {
+    const errorMessage = (error as { message?: string })?.message || 'Error loading payments';
+    return <div className="text-center text-red-500">{errorMessage}</div>;
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -276,22 +304,6 @@ const PaymentComponent: React.FC = () => {
       {errorMessage && <div className="text-red-500 text-center">{errorMessage}</div>}
       {successMessage && <div className="text-green-500 text-center">{successMessage}</div>}
 
-      {/* Payment Chart - NOW PLACED HIGHER */}
-      <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold text-center mb-4">Payments Overview</h2>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={payments} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis dataKey="payment_id" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
-            <Tooltip contentStyle={{ background: "#fff", borderRadius: "8px", borderColor: "#ccc" }} />
-            <Legend verticalAlign="top" height={30} />
-            <Bar dataKey="amount_paid" fill="#4CAF50" barSize={30} radius={[5, 5, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Create Payment */}
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Create Payment</h2>
         <input
@@ -316,19 +328,15 @@ const PaymentComponent: React.FC = () => {
         </button>
       </section>
 
-      {/* Update Payment */}
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">Update Payment</h2>
         <input
           type="number"
           value={paymentId}
-          onChange={(e) => setPaymentId(e.target.value)}
+          onChange={(e) => setPaymentId(e.target.value ? Number(e.target.value) : '')}
           placeholder="Enter Payment ID"
           className="p-2 border border-gray-300 rounded-md"
         />
-        <button className="bg-green-500 text-white p-3 rounded-md hover:bg-green-600">
-          Get Payment
-        </button>
 
         {singlePayment && (
           <div className="mt-4">
@@ -354,10 +362,9 @@ const PaymentComponent: React.FC = () => {
         )}
       </section>
 
-      {/* All Payments List */}
       <section>
         <h2 className="text-2xl font-semibold mb-4">All Payments</h2>
-        {payments?.map((payment) => (
+        {payments?.map((payment: Payment) => (
           <div key={payment.payment_id} className="p-4 border border-gray-300 rounded-md bg-gray-50 mb-4">
             <p><strong>ID:</strong> {payment.payment_id}</p>
             <p><strong>Amount Paid:</strong> {payment.amount_paid}</p>

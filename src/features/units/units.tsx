@@ -13,7 +13,7 @@ const UnitPage: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', status: 'available' });
   const [message, setMessage] = useState('');
 
-  const { data: unit, refetch, isFetching, isError } = useGetUnitByIdQuery(unitId, { skip: !unitId });
+  const { data: unit, refetch, isFetching, isError } = useGetUnitByIdQuery(Number(unitId), { skip: !unitId });
   const { data: units, refetch: refetchAllUnits, isLoading: isUnitsLoading } = useGetAllUnitsQuery(undefined);
   const [createUnit, { isLoading: isCreating }] = useCreateUnitMutation();
   const [updateUnit, { isLoading: isUpdating }] = useUpdateUnitMutation();

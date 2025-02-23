@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_URL = 'https://rentalapi-mqqc.onrender.com';
+const API_URL = 'https://rentalapi-mqqc.onrender.com/';
 
 export const paymentsApi = createApi({
   reducerPath: 'paymentsApi',
