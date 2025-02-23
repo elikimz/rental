@@ -8,6 +8,7 @@ import LeasePage from './features/lease/lease';
 import LoginPage from './features/login/login';
 import RegisterPage from './features/register/register';
 import PaymentComponent from './features/payments/payments';
+import UserManagement from './features/users/users';
 
 const Router: React.FC = () => {
   const router = createBrowserRouter([
@@ -29,6 +30,7 @@ const Router: React.FC = () => {
       { path: 'tenants', element: <TenantsPage /> },
       { path: 'leases', element: <LeasePage /> },
       { path: 'payments', element: <PaymentComponent/> },
+      { path: 'users', element: <UserManagement/> },
       ],
     },
   ]);

@@ -17,7 +17,7 @@ interface TenantCreateRequest {
 export const tenantAPI = createApi({
   reducerPath: 'tenantAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://rentalapi-mqqc.onrender.com',
+    baseUrl: 'http://127.0.0.1:8000',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
