@@ -9,6 +9,7 @@ import { propertiesApi } from "../features/properties/propertiesAPI";
 import { unitAPI } from "../features/units/unitsAPI";
 import { tenantAPI } from "../features/tenants/tenantsAPI";
 import { leaseAPI } from "../features/lease/leaseAPI";
+import { paymentsApi } from "../features/payments/paymentsAPI";
 
 
 
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
     [propertiesApi.reducerPath]: propertiesApi.reducer,
     [unitAPI.reducerPath]: unitAPI.reducer,
     [tenantAPI.reducerPath]:tenantAPI.reducer,
-    [leaseAPI.reducerPath]:leaseAPI.reducer
+    [leaseAPI.reducerPath]:leaseAPI.reducer,
+    [paymentsApi.reducerPath]:paymentsApi.reducer
 
 
        // Add other reducers here
@@ -45,7 +47,7 @@ export const store = configureStore({
             ,loginAPI.middleware 
             ,propertiesApi.middleware 
             ,unitAPI.middleware ,
-            tenantAPI.middleware,leaseAPI.middleware),
+            tenantAPI.middleware,leaseAPI.middleware ,paymentsApi.middleware),
 });
 
 export const persistor = persistStore(store);

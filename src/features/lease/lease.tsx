@@ -13,8 +13,8 @@ const LeasePage: React.FC = () => {
   const [formData, setFormData] = useState({
     start_date: '',
     end_date: '',
-    rent_amount: 0,
-    deposit_amount: 0,
+    rent_amount: '',
+    deposit_amount: '',
   });
   const [message, setMessage] = useState('');
 
@@ -41,11 +41,23 @@ const LeasePage: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateAmounts = () => {
+    const rent = parseFloat(formData.rent_amount);
+    const deposit = parseFloat(formData.deposit_amount);
+    if (deposit > rent) {
+      setMessage('❌ Deposit amount cannot be more than rent amount.');
+      return false;
+    }
+    return true;
+  };
+
   const handleCreateLease = async () => {
+    if (!validateAmounts()) return;
     try {
       await createLease(formData).unwrap();
       setMessage('✅ Lease created successfully!');
       refetchAllLeases();
+      setFormData({ start_date: '', end_date: '', rent_amount: '', deposit_amount: '' });
     } catch {
       setMessage('❌ Failed to create lease.');
     }
@@ -53,13 +65,15 @@ const LeasePage: React.FC = () => {
 
   const handleUpdateLease = async () => {
     if (!leaseId) {
-      setMessage('Lease ID is required for update.');
+      setMessage('❌ Lease ID is required for update.');
       return;
     }
+    if (!validateAmounts()) return;
     try {
       await updateLease({ id: Number(leaseId), leaseData: formData }).unwrap();
       setMessage('✅ Lease updated successfully!');
       refetchAllLeases();
+      setFormData({ start_date: '', end_date: '', rent_amount: '', deposit_amount: '' });
     } catch {
       setMessage('❌ Failed to update lease.');
     }
@@ -100,8 +114,8 @@ const LeasePage: React.FC = () => {
         <h2 className="text-xl font-semibold">Create / Update Lease</h2>
         <input type="date" name="start_date" value={formData.start_date} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
         <input type="date" name="end_date" value={formData.end_date} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
-        <input type="number" name="rent_amount" value={formData.rent_amount} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
-        <input type="number" name="deposit_amount" value={formData.deposit_amount} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
+        <input type="number" name="rent_amount" placeholder="Rent Amount" value={formData.rent_amount} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
+        <input type="number" name="deposit_amount" placeholder="Deposit Amount" value={formData.deposit_amount} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
         
         <button onClick={handleCreateLease} disabled={isCreating} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2">
           {isCreating ? <Spinner /> : 'Create Lease'}
@@ -137,4 +151,4 @@ const LeasePage: React.FC = () => {
 
 export default LeasePage;
 
-// Let me know if you want me to refine anything! 🚀
+// Let me know if you want any adjustments! 🚀

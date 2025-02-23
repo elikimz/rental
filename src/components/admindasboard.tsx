@@ -22,7 +22,7 @@ const AdminLayout: React.FC = () => {
           <Link to="/admin-dashboard/units" className="block hover:text-gray-300">Units</Link>
           <Link to="/admin-dashboard/tenants" className="block hover:text-gray-300">Tenants</Link>
           <Link to="/admin-dashboard/leases" className="block hover:text-gray-300">Leases</Link>
-          <Link to="/admin/payments" className="block hover:text-gray-300">Payments</Link>
+          <Link to="/admin-dashboard/payments" className="block hover:text-gray-300">Payments</Link>
           <button onClick={handleLogout} className="mt-4 w-full text-left text-red-400 hover:text-red-600">
             Logout
           </button>
