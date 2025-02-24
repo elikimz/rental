@@ -1,45 +1,54 @@
-// PaymentPage.tsx
-import React, { useState } from 'react';
-import { useCreatePaymentMutation } from '../stripe/stripeAPI';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import { createPayment } from "./stripeAPI";
 
-const PaymentPage: React.FC = () => {
-  const [amount, setAmount] = useState(0);
-  const [createPayment] = useCreatePaymentMutation();
+const Payment = () => {
+    const [amount, setAmount] = useState<number>(0);
+    const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-  const handlePayment = async () => {
-    try {
-      const response = await createPayment({ amount_paid: amount }).unwrap();
-      if (response.checkout_url) {
-        toast.success('Redirecting to payment...');
-        window.location.href = response.checkout_url;
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Failed to initiate payment');
-    }
-  };
+    const handlePayment = async () => {
+        try {
+            const paymentResponse = await createPayment(amount);
+            setCheckoutUrl(paymentResponse.checkout_url);
+        } catch (err: any) {
+            setError(err.message);
+        }
+    };
 
-  return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold mb-6">Payment</h2>
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(Number(e.target.value))}
-        placeholder="Enter amount"
-        className="w-full p-3 border"
-      />
-      <button
-        onClick={handlePayment}
-        className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 mt-4"
-      >
-        Pay Now
-      </button>
-    </div>
-  );
+    return (
+        <div className="p-4">
+            <h1 className="text-2xl mb-4">Make a Payment</h1>
+            <input
+                type="number"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) => setAmount(parseFloat(e.target.value))}
+                className="border p-2 mb-4 w-full"
+            />
+            <button
+                onClick={handlePayment}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+                Pay with Stripe
+            </button>
+
+            {checkoutUrl && (
+                <div className="mt-4">
+                    <p>Payment created! Click below to complete:</p>
+                    <a
+                        href={checkoutUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline"
+                    >
+                        Go to Checkout
+                    </a>
+                </div>
+            )}
+
+            {error && <p className="text-red-500 mt-4">{error}</p>}
+        </div>
+    );
 };
 
-export default PaymentPage;
-
-// Let me know if you want to add payment status tracking or anything else! 🚀
+export default Payment;
