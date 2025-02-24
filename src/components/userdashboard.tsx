@@ -50,16 +50,16 @@ const TenantLayout: React.FC = () => {
           <Link to="/tenant-dashboard/account" className="block hover:text-gray-300" onClick={handleLinkClick}>
             My Account
           </Link>
-          <Link to="/tenant-dashboard/properties" className="block hover:text-gray-300" onClick={handleLinkClick}>
+          <Link to="/tenant-dashboard/property" className="block hover:text-gray-300" onClick={handleLinkClick}>
             Properties
           </Link>
-          <Link to="/tenant-dashboard/units" className="block hover:text-gray-300" onClick={handleLinkClick}>
+          <Link to="/tenant-dashboard/unit" className="block hover:text-gray-300" onClick={handleLinkClick}>
             Units
           </Link>
-          <Link to="/tenant-dashboard/leases" className="block hover:text-gray-300" onClick={handleLinkClick}>
+          <Link to="/tenant-dashboard/lease" className="block hover:text-gray-300" onClick={handleLinkClick}>
             Leases
           </Link>
-          <Link to="/tenant-dashboard/payments" className="block hover:text-gray-300" onClick={handleLinkClick}>
+          <Link to="/tenant-dashboard/payment" className="block hover:text-gray-300" onClick={handleLinkClick}>
             Payments
           </Link>
           <Link to="/tenant-dashboard/support" className="block hover:text-gray-300" onClick={handleLinkClick}>
