@@ -166,6 +166,9 @@ const AccountPage: React.FC = () => {
   const decodedToken: any = token ? jwtDecode(token) : null;
   const userId = decodedToken?.id;
 
+  console.log("Decoded Token:", decodedToken);
+  console.log("User ID:", userId);
+
   const { data: user, isLoading, error } = useGetUserByIdQuery(userId, { skip: !userId });
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser] = useDeleteUserMutation();
@@ -179,7 +182,7 @@ const AccountPage: React.FC = () => {
   });
 
   useEffect(() => {
-    if (user) {
+    if (user && userId) {
       setFormData({ ...user, id: userId });
     }
   }, [user, userId]);
@@ -206,9 +209,11 @@ const AccountPage: React.FC = () => {
         alert("User ID is missing. Please log in again.");
         return;
       }
+      console.log("Updating user with ID:", userId);
       await updateUser({ ...formData, id: userId }).unwrap();
       alert("Account updated successfully!");
-    } catch {
+    } catch (error) {
+      console.error("Update error:", error);
       alert("Failed to update account");
     }
   };
@@ -216,6 +221,7 @@ const AccountPage: React.FC = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
       try {
+        console.log("Deleting user with ID:", userId);
         await deleteUser(userId).unwrap();
         localStorage.removeItem("token");
         alert("Account deleted successfully!");
