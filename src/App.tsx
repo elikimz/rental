@@ -43,15 +43,12 @@ const Router: React.FC = () => {
       path: '/contact',
       element: <ContactPage/>,
     },
-    {
-      path: '/overview',
-      element: <Overview/>,
-    },
+   
     {
       path: '/admin-dashboard',
       element: <AdminLayout />,
       children: [
-      // { path: '', element: <DashboardHome /> },
+      { path: 'overview', element: <Overview /> },
       { path: 'units', element: <UnitPage /> },
        { path: 'properties', element: <PropertiesPage /> },
       { path: 'tenants', element: <TenantsPage /> },
