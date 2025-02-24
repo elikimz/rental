@@ -14,6 +14,7 @@ import Properties from './pages/properties';
 import ServicesPage from './pages/services';
 import ContactPage from './pages/contact';
 import Overview from './pages/Overview';
+import TenantLayout from './components/userdashboard';
 
 
 const Router: React.FC = () => {
@@ -54,6 +55,20 @@ const Router: React.FC = () => {
       { path: 'tenants', element: <TenantsPage /> },
       { path: 'leases', element: <LeasePage /> },
       { path: 'payments', element: <PaymentComponent/> },
+      { path: 'users', element: <UserManagement/> },
+      ],
+    },
+
+    {
+      path: '/tenant-dashboard',
+      element: <TenantLayout />,
+      children: [
+      { path: 'account', element: <Overview /> },
+      { path: 'property', element: <UnitPage /> },
+       { path: 'unit', element: <PropertiesPage /> },
+      { path: 'lease', element: <TenantsPage /> },
+      { path: 'payment', element: <LeasePage /> },
+      { path: 'support', element: <PaymentComponent/> },
       { path: 'users', element: <UserManagement/> },
       ],
     },
