@@ -9,22 +9,38 @@ import LoginPage from './features/login/login';
 import RegisterPage from './features/register/register';
 import PaymentComponent from './features/payments/payments';
 import UserManagement from './features/users/users';
-//import HomePage from './pages/home';
+import HomePage from './pages/home';
+import Properties from './pages/properties';
+import ServicesPage from './pages/services';
+import ContactPage from './pages/contact';
+
 
 const Router: React.FC = () => {
   const router = createBrowserRouter([
 
-    // {
-    //   path: '/',
-    //   element: <HomePage/>,
-    // },
+    {
+      path: '/',
+      element: <HomePage/>,
+    },
     {
       path: '/login',
       element: <LoginPage />,
     },
     {
-      path: '/',
+      path: '/register',
       element: <RegisterPage />,
+    },
+    {
+      path: '/properties',
+      element: <Properties/>,
+    },
+    {
+      path: '/services',
+      element: <ServicesPage/>,
+    },
+    {
+      path: '/contact',
+      element: <ContactPage/>,
     },
     {
       path: '/admin-dashboard',
