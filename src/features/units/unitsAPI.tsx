@@ -25,7 +25,7 @@ export const unitAPI = createApi({
   }),
   endpoints: (builder) => ({
     getAllUnits: builder.query<Unit[], void>({
-      query: () => '/units', // Fixed the double /units issue
+      query: () => '/units/', // Fixed the double /units issue
     }),
     getUnitById: builder.query<Unit, number>({
       query: (id) => `/units/${id}`,
