@@ -13,7 +13,7 @@ const TenantPage: React.FC = () => {
   const [message, setMessage] = useState('');
 
   const { data: tenants, refetch: refetchAllTenants, isLoading: isTenantsLoading, isError } = useGetAllTenantsQuery();
-  const { data: tenant, refetch, isFetching } = useGetTenantByIdQuery(Number(tenantId), { skip: !tenantId });
+  const { data: tenant, refetch, isFetching, error } = useGetTenantByIdQuery(Number(tenantId), { skip: !tenantId });
 
   const [updateTenant, { isLoading: isUpdating }] = useUpdateTenantMutation();
   const [deleteTenant, { isLoading: isDeleting }] = useDeleteTenantMutation();
@@ -24,6 +24,12 @@ const TenantPage: React.FC = () => {
     }
   }, [tenant]);
 
+  useEffect(() => {
+    console.log("Fetched tenants:", tenants);
+    console.log("Fetching tenants:", isTenantsLoading);
+    console.log("Tenant fetch error:", isError ? error : "No error");
+  }, [tenants, isTenantsLoading, error, isError]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -31,24 +37,28 @@ const TenantPage: React.FC = () => {
 
   const handleUpdateTenant = async () => {
     if (!tenantId || !formData.full_name || !formData.email || !formData.phone_number) {
-      setMessage('Tenant ID and all fields are required for update.');
+      setMessage('❌ Tenant ID and all fields are required for update.');
       return;
     }
     try {
+      console.log("Updating tenant:", tenantId, formData);
       await updateTenant({ id: Number(tenantId), tenantData: formData }).unwrap();
       setMessage('✅ Tenant updated successfully!');
       refetchAllTenants();
-    } catch {
+    } catch (err) {
+      console.error("Update error:", err);
       setMessage('❌ Failed to update tenant.');
     }
   };
 
   const handleDeleteTenant = async (id: number) => {
     try {
+      console.log("Deleting tenant:", id);
       await deleteTenant(id).unwrap();
       setMessage('✅ Tenant deleted successfully!');
       refetchAllTenants();
-    } catch {
+    } catch (err) {
+      console.error("Delete error:", err);
       setMessage('❌ Failed to delete tenant.');
     }
   };
@@ -72,7 +82,7 @@ const TenantPage: React.FC = () => {
       </div>
 
       {isFetching && <Spinner />}
-      {isError && tenantId && <p className="text-red-500">Tenant not found.</p>}
+      {isError && tenantId && <p className="text-red-500">❌ Tenant not found.</p>}
 
       <div className="mb-6">
         <h2 className="text-xl font-semibold">Update Tenant</h2>
@@ -136,5 +146,3 @@ const TenantPage: React.FC = () => {
 };
 
 export default TenantPage;
-
-// 🚀 Let me know if anything else needs refining! ✨

@@ -14,7 +14,7 @@ interface CreateUnitRequest {
 export const unitAPI = createApi({
   reducerPath: 'unitAPI',
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'https://rentalapi-mqqc.onrender.com',
+    baseUrl: 'https://rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {

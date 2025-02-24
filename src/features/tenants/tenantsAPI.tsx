@@ -17,21 +17,29 @@ interface TenantCreateRequest {
 export const tenantAPI = createApi({
   reducerPath: 'tenantAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://rentalapi-mqqc.onrender.com',
+    baseUrl: 'https://rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
+      } else {
+        console.warn("⚠️ No token found in localStorage!");
       }
       return headers;
     }
   }),
   endpoints: (builder) => ({
     getAllTenants: builder.query<Tenant[], void>({
-      query: () => '/tenant/',
+      query: () => {
+        console.log("Fetching all tenants...");
+        return '/tenant/';
+      },
     }),
     getTenantById: builder.query<Tenant, number>({
-      query: (id) => `/tenant/${id}`,
+      query: (id) => {
+        console.log(`Fetching tenant with ID: ${id}`);
+        return `/tenant/${id}`;
+      },
     }),
     registerTenant: builder.mutation<Tenant, TenantCreateRequest>({
       query: (tenantData) => ({
@@ -63,5 +71,3 @@ export const {
   useUpdateTenantMutation,
   useDeleteTenantMutation,
 } = tenantAPI;
-
-// 🚀 This matches your backend perfectly! Let me know if you want any tweaks. ✨
