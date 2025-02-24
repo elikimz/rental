@@ -3,14 +3,34 @@ import React, { useState, useEffect } from "react";
 import { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation } from "../features/users/usersAPI";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+
 import "react-toastify/dist/ReactToastify.css";
 
-const AccountPage: React.FC = () => {
-  const userId = localStorage.getItem("userId");
-  const navigate = useNavigate();
+// Define the structure of the token payload
+interface TokenPayload {
+  id: number;
+}
 
-  // Fetch user data
-  const { data: user, isLoading, isError } = useGetUserByIdQuery(Number(userId), { skip: !userId });
+const AccountPage: React.FC = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  // Decode token to get the logged-in user's ID
+  let userId: number | null = null;
+  if (token) {
+    try {
+      const decoded: TokenPayload = jwtDecode(token);
+      userId = decoded.id;
+    } catch (error) {
+      toast.error("Invalid session. Please log in again.");
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
+  }
+
+  // Fetch user details using the decoded ID
+  const { data: user, isLoading, isError } = useGetUserByIdQuery(userId!, { skip: !userId });
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
@@ -39,7 +59,6 @@ const AccountPage: React.FC = () => {
 
     try {
       await deleteUser(user?.id).unwrap();
-      localStorage.removeItem("userId");
       localStorage.removeItem("token");
       navigate("/login");
       toast.success("Account deleted successfully.");
