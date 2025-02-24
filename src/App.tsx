@@ -20,6 +20,7 @@ import PropertiePage from './usersmanagement/properties';
 import LeaseManagementPage from './usersmanagement/lease';
 import UnitManagementPage from './usersmanagement/units';
 import PaymentPage from './features/stripe/stripe';
+import Success from './pages/success';
 
 
 const Router: React.FC = () => {
@@ -49,6 +50,11 @@ const Router: React.FC = () => {
       path: '/contact',
       element: <ContactPage/>,
     },
+    {
+      path: '/success',
+      element: <Success/>,
+    },
+   
    
     {
       path: '/admin-dashboard',
