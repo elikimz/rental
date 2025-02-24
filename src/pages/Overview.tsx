@@ -139,10 +139,10 @@ const Overview: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="mt-6 flex space-x-4">
-        <Link to="/admin-dashboard/properties/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg">
+        <Link to="/admin-dashboard/properties" className="bg-blue-600 text-white px-4 py-2 rounded-lg">
           Add Property
         </Link>
-        <Link to="/admin-dashboard/tenants/new" className="bg-green-600 text-white px-4 py-2 rounded-lg">
+        <Link to="/admin-dashboard/tenants" className="bg-green-600 text-white px-4 py-2 rounded-lg">
           Add Tenant
         </Link>
         <Link to="/admin-dashboard/payments" className="bg-yellow-600 text-white px-4 py-2 rounded-lg">
