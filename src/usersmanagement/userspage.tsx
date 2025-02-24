@@ -145,35 +145,21 @@
 // export default AccountPage;
 
 
+import  { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation }  from '../features/users/usersAPI';
+
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import {
-  useGetUserByIdQuery,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-} from "../features/users/usersAPI";
-
-interface User {
-  id: number;
-  full_name: string;
-  email: string;
-  role: string;
-  profile_image?: string;
-}
 
 const AccountPage: React.FC = () => {
   const token = localStorage.getItem("token");
   const decodedToken: any = token ? jwtDecode(token) : null;
   const userId = decodedToken?.id;
 
-  console.log("Decoded Token:", decodedToken);
-  console.log("User ID:", userId);
-
   const { data: user, isLoading, error } = useGetUserByIdQuery(userId, { skip: !userId });
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser] = useDeleteUserMutation();
 
-  const [formData, setFormData] = useState<User>({
+  const [formData, setFormData] = useState({
     id: 0,
     full_name: "",
     email: "",
@@ -205,15 +191,9 @@ const AccountPage: React.FC = () => {
 
   const handleUpdate = async () => {
     try {
-      if (!userId) {
-        alert("User ID is missing. Please log in again.");
-        return;
-      }
-      console.log("Updating user with ID:", userId);
-      await updateUser({ ...formData, id: userId }).unwrap();
+      await updateUser({ userId, userData: formData }).unwrap();
       alert("Account updated successfully!");
-    } catch (error) {
-      console.error("Update error:", error);
+    } catch {
       alert("Failed to update account");
     }
   };
@@ -221,13 +201,12 @@ const AccountPage: React.FC = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
       try {
-        console.log("Deleting user with ID:", userId);
         await deleteUser(userId).unwrap();
         localStorage.removeItem("token");
         alert("Account deleted successfully!");
         window.location.href = "/login";
       } catch {
-        alert("Failed to delete account. Check permissions.");
+        alert("Failed to delete account");
       }
     }
   };
@@ -239,46 +218,32 @@ const AccountPage: React.FC = () => {
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-3xl font-bold mb-6">Tenant Account Management</h2>
       <form className="space-y-6">
-        <div className="flex flex-col items-center">
-          {formData.profile_image && (
-            <img
-              src={formData.profile_image}
-              alt="Profile"
-              className="w-32 h-32 rounded-full mb-4"
-            />
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </div>
-
+        {formData.profile_image && (
+          <img src={formData.profile_image} alt="Profile" className="w-32 h-32 rounded-full mb-4" />
+        )}
+        <input type="file" accept="image/*" onChange={handleImageChange} className="w-full p-2 border" />
         <input
           type="text"
           name="full_name"
           value={formData.full_name}
           onChange={handleChange}
           placeholder="Full Name"
-          className="w-full p-3 border border-gray-300 rounded"
+          className="w-full p-3 border"
         />
         <input
           type="email"
           name="email"
           value={formData.email}
-          placeholder="Email"
-          className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+          className="w-full p-3 border bg-gray-100"
           disabled
         />
         <input
           type="text"
           name="role"
           value={formData.role}
-          className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+          className="w-full p-3 border bg-gray-100"
           readOnly
         />
-
         <div className="flex justify-between">
           <button
             type="button"
