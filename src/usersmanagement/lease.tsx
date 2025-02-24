@@ -3,8 +3,6 @@
 // import React, { useState } from "react";
 // import { useGetAllLeasesQuery, useCreateLeaseMutation } from "../features/lease/leaseAPI";
 // import { jwtDecode } from "jwt-decode";
-// import { toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 
 // const LeaseManagementPage: React.FC = () => {
 //   const token = localStorage.getItem("token");
@@ -13,6 +11,8 @@
 
 //   const { data: leases, isLoading, error, refetch } = useGetAllLeasesQuery();
 //   const [createLease] = useCreateLeaseMutation();
+//   const [loading, setLoading] = useState(false);
+//   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
 //   const [formData, setFormData] = useState({
 //     start_date: "",
@@ -28,10 +28,12 @@
 
 //   const handleCreateLease = async () => {
 //     if (!tenantId) {
-//       toast.error("Tenant ID not found");
+//       setMessage({ type: 'error', text: "Tenant ID not found" });
 //       return;
 //     }
 
+//     setLoading(true);
+//     setMessage(null);
 //     try {
 //       await createLease({
 //           tenant_id: tenantId,
@@ -42,10 +44,13 @@
 //           unit_id: 0
 //       }).unwrap();
 //       refetch();
-//       toast.success("Lease created successfully!");
+//       setMessage({ type: 'success', text: "Lease created successfully!" });
+//       setFormData({ start_date: "", end_date: "", rent_amount: "", deposit_amount: "" });
 //     } catch (error) {
 //       console.error("Error creating lease:", error);
-//       toast.error("Failed to create lease");
+//       setMessage({ type: 'error', text: "Failed to create lease" });
+//     } finally {
+//       setLoading(false);
 //     }
 //   };
 
@@ -55,6 +60,13 @@
 //   return (
 //     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
 //       <h2 className="text-3xl font-bold mb-6">Lease Management</h2>
+//       {message && (
+//         <div
+//           className={`p-4 mb-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}
+//         >
+//           {message.text}
+//         </div>
+//       )}
 //       <form className="space-y-4">
 //         <input
 //           type="date"
@@ -89,9 +101,10 @@
 //         <button
 //           type="button"
 //           onClick={handleCreateLease}
-//           className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+//           className={`bg-blue-500 text-white px-6 py-2 rounded ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+//           disabled={loading}
 //         >
-//           Create Lease
+//           {loading ? "Creating Lease..." : "Create Lease"}
 //         </button>
 //       </form>
 
@@ -116,6 +129,7 @@
 
 import React, { useState } from "react";
 import { useGetAllLeasesQuery, useCreateLeaseMutation } from "../features/lease/leaseAPI";
+import {useGetAllUnitsQuery} from "../features/units/unitsAPI"
 import { jwtDecode } from "jwt-decode";
 
 const LeaseManagementPage: React.FC = () => {
@@ -124,6 +138,7 @@ const LeaseManagementPage: React.FC = () => {
   const tenantId = decodedToken?.id;
 
   const { data: leases, isLoading, error, refetch } = useGetAllLeasesQuery();
+  const { data: units } = useGetAllUnitsQuery();
   const [createLease] = useCreateLeaseMutation();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -133,16 +148,17 @@ const LeaseManagementPage: React.FC = () => {
     end_date: "",
     rent_amount: "",
     deposit_amount: "",
+    unit_id: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleCreateLease = async () => {
-    if (!tenantId) {
-      setMessage({ type: 'error', text: "Tenant ID not found" });
+    if (!tenantId || !formData.unit_id) {
+      setMessage({ type: 'error', text: "Tenant ID and Unit ID are required" });
       return;
     }
 
@@ -150,19 +166,19 @@ const LeaseManagementPage: React.FC = () => {
     setMessage(null);
     try {
       await createLease({
-          tenant_id: tenantId,
-          start_date: formData.start_date,
-          end_date: formData.end_date,
-          rent_amount: Number(formData.rent_amount),
-          deposit_amount: Number(formData.deposit_amount),
-          unit_id: 0
+        tenant_id: tenantId,
+        start_date: formData.start_date,
+        end_date: formData.end_date,
+        rent_amount: Number(formData.rent_amount),
+        deposit_amount: Number(formData.deposit_amount),
+        unit_id: Number(formData.unit_id)
       }).unwrap();
       refetch();
       setMessage({ type: 'success', text: "Lease created successfully!" });
-      setFormData({ start_date: "", end_date: "", rent_amount: "", deposit_amount: "" });
-    } catch (error) {
-      console.error("Error creating lease:", error);
-      setMessage({ type: 'error', text: "Failed to create lease" });
+      setFormData({ start_date: "", end_date: "", rent_amount: "", deposit_amount: "", unit_id: "" });
+    } catch (err) {
+      const errorMessage = (err as any)?.data?.detail || "Failed to create lease";
+      setMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -212,6 +228,19 @@ const LeaseManagementPage: React.FC = () => {
           placeholder="Deposit Amount"
           className="w-full p-3 border"
         />
+        <select
+          name="unit_id"
+          value={formData.unit_id}
+          onChange={handleChange}
+          className="w-full p-3 border"
+        >
+          <option value="">Select a Unit</option>
+          {units?.map((unit: any) => (
+            <option key={unit.id} value={unit.id}>
+              {unit.name} - {unit.property_name}
+            </option>
+          ))}
+        </select>
         <button
           type="button"
           onClick={handleCreateLease}
