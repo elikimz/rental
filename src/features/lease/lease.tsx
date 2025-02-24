@@ -153,41 +153,41 @@
 
 // // Let me know if you want any adjustments! 🚀
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   useGetAllLeasesQuery,
   useGetLeaseByIdQuery,
   useCreateLeaseMutation,
   useUpdateLeaseMutation,
   useDeleteLeaseMutation,
-} from './leaseAPI';
-import Spinner from '../../components/spinner';
+} from "./leaseAPI";
+import Spinner from "../../components/spinner";
 
 const LeasePage: React.FC = () => {
-  const [leaseId, setLeaseId] = useState('');
+  const [leaseId, setLeaseId] = useState("");
   const [formData, setFormData] = useState({
-    tenant_id: '', // Include tenant_id
-    unit_id: '', // Include unit_id
-    start_date: '',
-    end_date: '',
+    tenant_id: "",
+    unit_id: "",
+    start_date: "",
+    end_date: "",
     rent_amount: 0,
     deposit_amount: 0,
   });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
-  const { refetch: refetchAllLeases, isError } = useGetAllLeasesQuery();
+  // Fetch all leases automatically
+  const { data: leases, refetch: refetchAllLeases, isFetching: isFetchingLeases } = useGetAllLeasesQuery();
   const { data: lease, refetch, isFetching } = useGetLeaseByIdQuery(Number(leaseId), { skip: !leaseId });
 
   const [createLease, { isLoading: isCreating }] = useCreateLeaseMutation();
   const [updateLease, { isLoading: isUpdating }] = useUpdateLeaseMutation();
-  // eslint-disable-next-line no-empty-pattern
-  const [] = useDeleteLeaseMutation();
+  const [deleteLease] = useDeleteLeaseMutation();
 
   useEffect(() => {
     if (lease) {
       setFormData({
-        tenant_id: lease.tenant_id.toString(), // Ensure it's a string
-        unit_id: lease.unit_id.toString(), // Ensure it's a string
+        tenant_id: lease.tenant_id.toString(),
+        unit_id: lease.unit_id.toString(),
         start_date: lease.start_date,
         end_date: lease.end_date,
         rent_amount: Number(lease.rent_amount),
@@ -198,7 +198,6 @@ const LeasePage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: name === "rent_amount" || name === "deposit_amount" ? Number(value) || "" : value,
@@ -207,7 +206,7 @@ const LeasePage: React.FC = () => {
 
   const validateAmounts = () => {
     if (formData.deposit_amount > formData.rent_amount) {
-      setMessage('❌ Deposit amount cannot be more than rent amount.');
+      setMessage("❌ Deposit amount cannot be more than rent amount.");
       return false;
     }
     return true;
@@ -224,17 +223,17 @@ const LeasePage: React.FC = () => {
         rent_amount: formData.rent_amount,
         deposit_amount: formData.deposit_amount,
       }).unwrap();
-      setMessage('✅ Lease created successfully!');
+      setMessage("✅ Lease created successfully!");
       refetchAllLeases();
-      setFormData({ tenant_id: '', unit_id: '', start_date: '', end_date: '', rent_amount: 0, deposit_amount: 0 });
+      setFormData({ tenant_id: "", unit_id: "", start_date: "", end_date: "", rent_amount: 0, deposit_amount: 0 });
     } catch {
-      setMessage('❌ Failed to create lease.');
+      setMessage("❌ Failed to create lease.");
     }
   };
 
   const handleUpdateLease = async () => {
     if (!leaseId) {
-      setMessage('❌ Lease ID is required for update.');
+      setMessage("❌ Lease ID is required for update.");
       return;
     }
     if (!validateAmounts()) return;
@@ -250,16 +249,26 @@ const LeasePage: React.FC = () => {
           deposit_amount: formData.deposit_amount,
         },
       }).unwrap();
-      setMessage('✅ Lease updated successfully!');
+      setMessage("✅ Lease updated successfully!");
       refetchAllLeases();
-      setFormData({ tenant_id: '', unit_id: '', start_date: '', end_date: '', rent_amount: 0, deposit_amount: 0 });
+      setFormData({ tenant_id: "", unit_id: "", start_date: "", end_date: "", rent_amount: 0, deposit_amount: 0 });
     } catch {
-      setMessage('❌ Failed to update lease.');
+      setMessage("❌ Failed to update lease.");
+    }
+  };
+
+  const handleDeleteLease = async (id: number) => {
+    try {
+      await deleteLease(id).unwrap();
+      setMessage("✅ Lease deleted successfully!");
+      refetchAllLeases();
+    } catch {
+      setMessage("❌ Failed to delete lease.");
     }
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Lease Management</h1>
       {message && <p className="text-sm mb-4 text-center p-2 rounded bg-gray-100">{message}</p>}
 
@@ -277,7 +286,7 @@ const LeasePage: React.FC = () => {
       </div>
 
       {isFetching && <Spinner />}
-      {isError && leaseId && <p className="text-red-500">Lease not found.</p>}
+      {leaseId && !lease && <p className="text-red-500">Lease not found.</p>}
 
       <div className="mb-6">
         <h2 className="text-xl font-semibold">Create / Update Lease</h2>
@@ -287,14 +296,50 @@ const LeasePage: React.FC = () => {
         <input type="date" name="end_date" value={formData.end_date} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
         <input type="number" name="rent_amount" placeholder="Rent Amount" value={formData.rent_amount} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
         <input type="number" name="deposit_amount" placeholder="Deposit Amount" value={formData.deposit_amount} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
-        
+
         <button onClick={handleCreateLease} disabled={isCreating} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2">
-          {isCreating ? <Spinner /> : 'Create Lease'}
+          {isCreating ? <Spinner /> : "Create Lease"}
         </button>
         <button onClick={handleUpdateLease} disabled={isUpdating} className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-          {isUpdating ? <Spinner /> : 'Update Lease'}
+          {isUpdating ? <Spinner /> : "Update Lease"}
         </button>
       </div>
+
+      <h2 className="text-xl font-semibold mt-6">All Leases</h2>
+      {isFetchingLeases ? (
+        <Spinner />
+      ) : (
+        <table className="w-full mt-4 border-collapse border border-gray-300">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border p-2">Lease ID</th>
+              <th className="border p-2">Tenant ID</th>
+              <th className="border p-2">Unit ID</th>
+              <th className="border p-2">Start Date</th>
+              <th className="border p-2">End Date</th>
+              <th className="border p-2">Rent</th>
+              <th className="border p-2">Deposit</th>
+              <th className="border p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leases?.map((lease) => (
+              <tr key={lease.id} className="border">
+                <td className="border p-2">{lease.id}</td>
+                <td className="border p-2">{lease.tenant_id}</td>
+                <td className="border p-2">{lease.unit_id}</td>
+                <td className="border p-2">{lease.start_date}</td>
+                <td className="border p-2">{lease.end_date}</td>
+                <td className="border p-2">{lease.rent_amount}</td>
+                <td className="border p-2">{lease.deposit_amount}</td>
+                <td className="border p-2">
+                  <button onClick={() => handleDeleteLease(lease.id)} className="text-red-500">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
