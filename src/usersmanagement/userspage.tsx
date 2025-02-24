@@ -14,11 +14,13 @@ const AccountPage: React.FC = () => {
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
-  const [editedUser, setEditedUser] = useState({ id: "", name: "", email: "" });
+  const [editedUser, setEditedUser] = useState({ id: 0, full_name: "", email: "", role: "" });
 
   // Auto-fill user details when data is available
   useEffect(() => {
-    if (user) setEditedUser({ id: user.id, name: user.name, email: user.email });
+    if (user) {
+      setEditedUser({ id: user.id, full_name: user.full_name, email: user.email, role: user.role });
+    }
   }, [user]);
 
   // Handle Update
@@ -74,11 +76,11 @@ const AccountPage: React.FC = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-600 font-medium mb-1">Name</label>
+          <label className="block text-gray-600 font-medium mb-1">Full Name</label>
           <input
             type="text"
-            value={editedUser.name}
-            onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+            value={editedUser.full_name}
+            onChange={(e) => setEditedUser({ ...editedUser, full_name: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
           />
         </div>
@@ -90,6 +92,16 @@ const AccountPage: React.FC = () => {
             value={editedUser.email}
             onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-gray-600 font-medium mb-1">Role</label>
+          <input
+            type="text"
+            value={editedUser.role}
+            readOnly
+            className="w-full px-3 py-2 border border-gray-300 bg-gray-200 rounded-md"
           />
         </div>
 
