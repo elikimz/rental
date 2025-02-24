@@ -26,7 +26,7 @@ export const paymentAPI = createApi({
   endpoints: (builder) => ({
     createPayment: builder.mutation<Payment, CreatePaymentRequest>({
       query: (paymentData) => ({
-        url: '/payments/pay',
+        url: '/payments/pay/',
         method: 'POST',
         body: paymentData,
       }),
