@@ -131,7 +131,7 @@ interface User {
   full_name: string;
   email: string;
   role: string;
-  profile_picture?: string;
+  profile_image?: string;
 }
 
 const AccountPage: React.FC = () => {
@@ -145,11 +145,11 @@ const AccountPage: React.FC = () => {
   const [deleteUser] = useDeleteUserMutation();
 
   const [formData, setFormData] = useState<User>({
-    id: 0,
+    id: userId || 0,
     full_name: "",
     email: "",
     role: "",
-    profile_picture: "",
+    profile_image: "",
   });
 
   useEffect(() => {
@@ -163,9 +163,20 @@ const AccountPage: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, profile_image: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUpdate = async () => {
     try {
-      await updateUser(formData).unwrap();
+      await updateUser({ ...formData }).unwrap();
       alert("Account updated successfully!");
     } catch {
       alert("Failed to update account");
@@ -175,7 +186,7 @@ const AccountPage: React.FC = () => {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
       try {
-        await deleteUser({ id: userId }).unwrap();
+        await deleteUser(userId).unwrap();
         localStorage.removeItem("token");
         alert("Account deleted successfully!");
         window.location.href = "/login";
@@ -190,22 +201,17 @@ const AccountPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold mb-6">Tenant Account Management</h2>
+      <h2 className="text-3xl font-bold mb-6">Account Management</h2>
       <form className="space-y-6">
         <div className="flex items-center space-x-4">
-          <img
-            src={formData.profile_picture || "/default-avatar.png"}
-            alt="Profile"
-            className="w-24 h-24 rounded-full border"
-          />
-          <input
-            type="text"
-            name="profile_picture"
-            value={formData.profile_picture}
-            onChange={handleChange}
-            placeholder="Profile Picture URL"
-            className="flex-1 p-2 border border-gray-300 rounded"
-          />
+          {formData.profile_image && (
+            <img
+              src={formData.profile_image}
+              alt="Profile"
+              className="w-24 h-24 rounded-full border"
+            />
+          )}
+          <input type="file" accept="image/*" onChange={handleImageChange} className="w-full" />
         </div>
         <input
           type="text"
@@ -213,14 +219,15 @@ const AccountPage: React.FC = () => {
           value={formData.full_name}
           onChange={handleChange}
           placeholder="Full Name"
-          className="w-full p-3 border border-gray-300 rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg"
         />
         <input
           type="email"
           name="email"
           value={formData.email}
+          onChange={handleChange}
           placeholder="Email"
-          className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+          className="w-full p-3 border border-gray-300 rounded-lg"
           disabled
         />
         <input
@@ -228,20 +235,20 @@ const AccountPage: React.FC = () => {
           name="role"
           value={formData.role}
           readOnly
-          className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+          className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
         />
         <div className="flex justify-between">
           <button
             type="button"
             onClick={handleUpdate}
-            className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
           >
             Update Account
           </button>
           <button
             type="button"
             onClick={handleDelete}
-            className="bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700"
+            className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
           >
             Delete Account
           </button>
@@ -252,3 +259,6 @@ const AccountPage: React.FC = () => {
 };
 
 export default AccountPage;
+
+
+
