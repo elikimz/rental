@@ -136,7 +136,6 @@ interface User {
 
 const AccountPage: React.FC = () => {
   const token = localStorage.getItem("token");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const decodedToken: any = token ? jwtDecode(token) : null;
   const userId = decodedToken?.id;
 
@@ -145,7 +144,7 @@ const AccountPage: React.FC = () => {
   const [deleteUser] = useDeleteUserMutation();
 
   const [formData, setFormData] = useState<User>({
-    id: userId || 0,
+    id: userId,
     full_name: "",
     email: "",
     role: "",
@@ -176,7 +175,7 @@ const AccountPage: React.FC = () => {
 
   const handleUpdate = async () => {
     try {
-      await updateUser({ ...formData }).unwrap();
+      await updateUser(formData).unwrap();
       alert("Account updated successfully!");
     } catch {
       alert("Failed to update account");
@@ -200,26 +199,29 @@ const AccountPage: React.FC = () => {
   if (error) return <div>Error loading account details</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold mb-6">Account Management</h2>
+    <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-3xl font-bold mb-6 text-center">Account Management</h2>
       <form className="space-y-6">
-        <div className="flex items-center space-x-4">
-          {formData.profile_image && (
-            <img
-              src={formData.profile_image}
-              alt="Profile"
-              className="w-24 h-24 rounded-full border"
-            />
-          )}
-          <input type="file" accept="image/*" onChange={handleImageChange} className="w-full" />
-        </div>
+        {formData.profile_image && (
+          <img
+            src={formData.profile_image}
+            alt="Profile"
+            className="w-32 h-32 mx-auto rounded-full border"
+          />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        />
         <input
           type="text"
           name="full_name"
           value={formData.full_name}
           onChange={handleChange}
           placeholder="Full Name"
-          className="w-full p-3 border border-gray-300 rounded-lg"
+          className="w-full p-2 border border-gray-300 rounded"
         />
         <input
           type="email"
@@ -227,7 +229,7 @@ const AccountPage: React.FC = () => {
           value={formData.email}
           onChange={handleChange}
           placeholder="Email"
-          className="w-full p-3 border border-gray-300 rounded-lg"
+          className="w-full p-2 border border-gray-300 rounded"
           disabled
         />
         <input
@@ -235,20 +237,20 @@ const AccountPage: React.FC = () => {
           name="role"
           value={formData.role}
           readOnly
-          className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
+          className="w-full p-2 border border-gray-300 rounded bg-gray-100"
         />
         <div className="flex justify-between">
           <button
             type="button"
             onClick={handleUpdate}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Update Account
           </button>
           <button
             type="button"
             onClick={handleDelete}
-            className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
           >
             Delete Account
           </button>
@@ -259,6 +261,3 @@ const AccountPage: React.FC = () => {
 };
 
 export default AccountPage;
-
-
-
