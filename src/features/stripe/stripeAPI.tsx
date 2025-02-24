@@ -14,7 +14,7 @@ interface CreatePaymentRequest {
 export const paymentAPI = createApi({
   reducerPath: 'paymentAPI',
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'https://renta-dxdls5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net',
+    baseUrl: 'rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
