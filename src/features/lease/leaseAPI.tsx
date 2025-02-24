@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { ReactNode } from 'react';
+
 
 interface Lease {
-  [x: string]: ReactNode;
+  
   [x: string]: ReactNode;
   id: number;
   tenant_id: number;
