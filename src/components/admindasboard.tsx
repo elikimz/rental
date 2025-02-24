@@ -92,7 +92,7 @@ const AdminLayout: React.FC = () => {
           
           </Link>
             
-          <Link to="/overview" className="block hover:text-gray-300" onClick={handleLinkClick}>
+          <Link to="/admin-dashboard/overview" className="block hover:text-gray-300" onClick={handleLinkClick}>
           overview
             
           </Link>
