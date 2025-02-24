@@ -13,6 +13,7 @@ import HomePage from './pages/home';
 import Properties from './pages/properties';
 import ServicesPage from './pages/services';
 import ContactPage from './pages/contact';
+import Overview from './pages/Overview';
 
 
 const Router: React.FC = () => {
@@ -41,6 +42,10 @@ const Router: React.FC = () => {
     {
       path: '/contact',
       element: <ContactPage/>,
+    },
+    {
+      path: '/admin-dashboard',
+      element: <Overview/>,
     },
     {
       path: '/admin-dashboard',
