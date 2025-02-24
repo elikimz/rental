@@ -1,6 +1,10 @@
+
+
 // import React, { useState } from "react";
 // import { useGetAllLeasesQuery, useCreateLeaseMutation } from "../features/lease/leaseAPI";
 // import { jwtDecode } from "jwt-decode";
+// import { toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 
 // const LeaseManagementPage: React.FC = () => {
 //   const token = localStorage.getItem("token");
@@ -11,7 +15,6 @@
 //   const [createLease] = useCreateLeaseMutation();
 
 //   const [formData, setFormData] = useState({
-//     unit_id: "",
 //     start_date: "",
 //     end_date: "",
 //     rent_amount: "",
@@ -25,24 +28,24 @@
 
 //   const handleCreateLease = async () => {
 //     if (!tenantId) {
-//       console.error("Tenant ID not found");
+//       toast.error("Tenant ID not found");
 //       return;
 //     }
 
 //     try {
 //       await createLease({
-//         tenant_id: tenantId,
-//         unit_id: Number(formData.unit_id),
-//         start_date: formData.start_date,
-//         end_date: formData.end_date,
-//         rent_amount: Number(formData.rent_amount),
-//         deposit_amount: Number(formData.deposit_amount),
+//           tenant_id: tenantId,
+//           start_date: formData.start_date,
+//           end_date: formData.end_date,
+//           rent_amount: Number(formData.rent_amount),
+//           deposit_amount: Number(formData.deposit_amount),
+//           unit_id: 0
 //       }).unwrap();
 //       refetch();
-//       alert("Lease created successfully!");
+//       toast.success("Lease created successfully!");
 //     } catch (error) {
 //       console.error("Error creating lease:", error);
-//       alert("Failed to create lease");
+//       toast.error("Failed to create lease");
 //     }
 //   };
 
@@ -53,14 +56,6 @@
 //     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
 //       <h2 className="text-3xl font-bold mb-6">Lease Management</h2>
 //       <form className="space-y-4">
-//         <input
-//           type="text"
-//           name="unit_id"
-//           value={formData.unit_id}
-//           onChange={handleChange}
-//           placeholder="Unit ID"
-//           className="w-full p-3 border"
-//         />
 //         <input
 //           type="date"
 //           name="start_date"
@@ -105,7 +100,6 @@
 //         {leases?.map((lease: any) => (
 //           <li key={lease.id} className="p-4 border-b">
 //             <p>Lease ID: {lease.id}</p>
-//             <p>Unit ID: {lease.unit_id}</p>
 //             <p>Start Date: {lease.start_date}</p>
 //             <p>End Date: {lease.end_date}</p>
 //             <p>Rent: {lease.rent_amount}</p>
@@ -119,6 +113,7 @@
 // };
 
 // export default LeaseManagementPage;
+
 
 import React, { useState } from "react";
 import { useGetAllLeasesQuery, useCreateLeaseMutation } from "../features/lease/leaseAPI";
@@ -141,6 +136,8 @@ const LeaseManagementPage: React.FC = () => {
     deposit_amount: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -151,6 +148,8 @@ const LeaseManagementPage: React.FC = () => {
       toast.error("Tenant ID not found");
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       await createLease({
@@ -166,6 +165,8 @@ const LeaseManagementPage: React.FC = () => {
     } catch (error) {
       console.error("Error creating lease:", error);
       toast.error("Failed to create lease");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -209,9 +210,10 @@ const LeaseManagementPage: React.FC = () => {
         <button
           type="button"
           onClick={handleCreateLease}
-          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
+          className={`bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={isSubmitting}
         >
-          Create Lease
+          {isSubmitting ? "Creating Lease..." : "Create Lease"}
         </button>
       </form>
 
