@@ -145,8 +145,7 @@
 // export default AccountPage;
 
 
-import  { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation }  from '../features/users/usersAPI';
-
+import { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation } from '../features/users/usersAPI';
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
@@ -190,22 +189,34 @@ const AccountPage: React.FC = () => {
   };
 
   const handleUpdate = async () => {
+    if (!userId) {
+      alert("User ID is missing. Please log in again.");
+      return;
+    }
+
     try {
-      await updateUser({ userId, userData: formData }).unwrap();
+      await updateUser({ id: userId, userData: formData }).unwrap();
       alert("Account updated successfully!");
-    } catch {
+    } catch (error) {
+      console.error("Update error:", error);
       alert("Failed to update account");
     }
   };
 
   const handleDelete = async () => {
+    if (!userId) {
+      alert("User ID is missing. Please log in again.");
+      return;
+    }
+
     if (window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
       try {
         await deleteUser(userId).unwrap();
         localStorage.removeItem("token");
         alert("Account deleted successfully!");
         window.location.href = "/login";
-      } catch {
+      } catch (error) {
+        console.error("Delete error:", error);
         alert("Failed to delete account");
       }
     }
