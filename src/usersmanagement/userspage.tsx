@@ -15,9 +15,10 @@ interface User {
 
 const AccountPage: React.FC = () => {
   const token = localStorage.getItem("token");
+  // Decode the token and get user ID
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const decodedToken: any = token ? jwtDecode(token) : null;
-  const userId = decodedToken?.user_id;
+  const userId = decodedToken?.id;
 
   const { data: user, isLoading, error } = useGetUserByIdQuery(userId, { skip: !userId });
   const [updateUser] = useUpdateUserMutation();
@@ -116,5 +117,4 @@ const AccountPage: React.FC = () => {
 };
 
 export default AccountPage;
-
 
