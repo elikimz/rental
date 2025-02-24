@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Users, Home, DollarSign, CheckCircle, Clock } from "lucide-react";
@@ -7,22 +7,45 @@ import { useGetAllLeasesQuery } from "../features/lease/leaseAPI";
 import { useGetAllPaymentsQuery } from "../features/payments/paymentsAPI";
 import { useGetAllTenantsQuery } from "../features/tenants/tenantsAPI";
 import { useGetAllPropertiesQuery } from "../features/properties/propertiesAPI";
-
-import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart as ReBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart as RePieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
 const Overview: React.FC = () => {
   const { data: properties } = useGetAllPropertiesQuery(undefined);
-  const { data: tenants } = useGetAllTenantsQuery();
-  const { data: units } = useGetAllUnitsQuery();
+  const { data: tenants } = useGetAllTenantsQuery(undefined);
+  const { data: units } = useGetAllUnitsQuery(undefined);
   const { data: payments } = useGetAllPaymentsQuery(undefined);
-  const { data: leases } = useGetAllLeasesQuery();
+  const { data: leases } = useGetAllLeasesQuery(undefined);
 
   const totalProperties = properties?.length || 0;
   const totalTenants = tenants?.length || 0;
-  const occupiedUnits = units?.filter(unit => unit.status === "occupied").length || 0;
-  const totalPendingPayments = payments?.reduce((sum: any, p: { status: string; amount: any; }) => sum + (p.status === "pending" ? p.amount : 0), 0) || 0;
+  const occupiedUnits = units?.filter((unit) => unit.status === "occupied").length || 0;
+  const vacantUnits = (units?.length || 0) - occupiedUnits;
+  const totalPendingPayments =
+    payments?.reduce((sum: number, p: { status: string; amount: number }) => sum + (p.status === "pending" ? p.amount : 0), 0) || 0;
 
-  const revenueData = payments?.map((p: { month: any; amount: any; }) => ({ month: p.month, revenue: p.amount })) || [];
+  // Revenue Data for Bar Chart
+  const revenueData = payments?.map((p: { month: string; amount: number }) => ({
+    month: p.month,
+    revenue: p.amount,
+  })) || [];
+
+  // Unit Status Data for Pie Chart
+  const unitStatusData = [
+    { name: "Occupied", value: occupiedUnits },
+    { name: "Vacant", value: vacantUnits },
+  ];
+  const COLORS = ["#4CAF50", "#FF5733"];
 
   return (
     <div className="p-6">
@@ -63,17 +86,36 @@ const Overview: React.FC = () => {
         </div>
       </div>
 
-      {/* Revenue Chart */}
-      <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-lg font-semibold mb-3">Revenue Trend</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <ReBarChart data={revenueData}>
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="revenue" fill="#4CAF50" />
-          </ReBarChart>
-        </ResponsiveContainer>
+      {/* Graphs */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        {/* Revenue Trend */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold mb-3">Revenue Trend</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <ReBarChart data={revenueData}>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="revenue" fill="#4CAF50" />
+            </ReBarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Unit Status Overview */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-lg font-semibold mb-3">Unit Status Overview</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <RePieChart>
+              <Pie data={unitStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100}>
+                {unitStatusData.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </RePieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Recent Activity */}
@@ -86,7 +128,7 @@ const Overview: React.FC = () => {
               {lease.tenant} moved into {lease.unit}
             </li>
           ))}
-          {payments?.slice(0, 3).map((payment: { tenant: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; amount: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; unit: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }, index: React.Key | null | undefined) => (
+          {payments?.slice(0, 3).map((payment: { tenant: string; amount: number; unit: string }, index: number) => (
             <li key={index} className="flex items-center">
               <Clock size={20} className="text-gray-500 mr-2" />
               {payment.tenant} paid Ksh {payment.amount} for {payment.unit}
