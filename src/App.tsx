@@ -44,7 +44,7 @@ const Router: React.FC = () => {
       element: <ContactPage/>,
     },
     {
-      path: '/admin-dashboard',
+      path: '/overview',
       element: <Overview/>,
     },
     {

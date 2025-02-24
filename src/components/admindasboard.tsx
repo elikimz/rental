@@ -88,8 +88,9 @@ const AdminLayout: React.FC = () => {
       >
         <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
         <nav className="space-y-4">
-          <Link to="/admin-dashboard" className="block hover:text-gray-300" onClick={handleLinkClick}>
+          <Link to="/overview" className="block hover:text-gray-300" onClick={handleLinkClick}>
             Overview
+            
           </Link>
           <Link to="/admin-dashboard/properties" className="block hover:text-gray-300" onClick={handleLinkClick}>
             Properties
