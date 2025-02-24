@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useCreatePaymentMutation } from './stripeAPI';
 
 const Payment: React.FC = () => {
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>(''); // Start as an empty string
   const [createPayment, { isLoading, error }] = useCreatePaymentMutation();
 
   const handlePayment = async () => {
+    const amountNumber = parseFloat(amount); // Convert to number before sending
+    if (isNaN(amountNumber) || amountNumber <= 0) return;
+
     try {
-      const response = await createPayment({ amount_paid: amount }).unwrap();
+      const response = await createPayment({ amount_paid: amountNumber }).unwrap();
       if (response.checkout_url) {
         window.location.href = response.checkout_url; // Redirect to Stripe Checkout
       }
@@ -23,12 +26,12 @@ const Payment: React.FC = () => {
         type="number"
         placeholder="Enter amount"
         value={amount}
-        onChange={(e) => setAmount(Number(e.target.value))}
+        onChange={(e) => setAmount(e.target.value)}
         className="border p-2 mb-4 w-64"
       />
       <button
         onClick={handlePayment}
-        disabled={isLoading || amount <= 0}
+        disabled={isLoading || !amount || parseFloat(amount) <= 0}
         className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300"
       >
         {isLoading ? 'Processing...' : 'Pay with Stripe'}
