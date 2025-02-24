@@ -17,6 +17,7 @@ import Overview from './pages/Overview';
 import TenantLayout from './components/userdashboard';
 import AccountPage from './usersmanagement/userspage';
 import PropertiePage from './usersmanagement/properties';
+import LeaseManagementPage from './usersmanagement/lease';
 
 
 const Router: React.FC = () => {
@@ -68,7 +69,7 @@ const Router: React.FC = () => {
       { path: 'account', element: <AccountPage/> },
       { path: 'property', element: <PropertiePage /> },
       //  { path: 'unit', element: <Unit/> },
-      // { path: 'lease', element: <Lease /> },
+      { path: 'lease', element: <LeaseManagementPage /> },
       // { path: 'payment', element: <Payment/> },
       // { path: 'support', element: <Support/> },
       // { path: 'users', element: <UserManagement/> },
