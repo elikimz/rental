@@ -19,6 +19,7 @@ import AccountPage from './usersmanagement/userspage';
 import PropertiePage from './usersmanagement/properties';
 import LeaseManagementPage from './usersmanagement/lease';
 import UnitManagementPage from './usersmanagement/units';
+import PaymentPage from './features/stripe/stripe';
 
 
 const Router: React.FC = () => {
@@ -71,7 +72,7 @@ const Router: React.FC = () => {
       { path: 'property', element: <PropertiePage /> },
       { path: 'unit', element: <UnitManagementPage/> },
       { path: 'lease', element: <LeaseManagementPage /> },
-      // { path: 'payment', element: <Payment/> },
+      { path: 'payment', element: <PaymentPage/> },
       // { path: 'support', element: <Support/> },
       // { path: 'users', element: <UserManagement/> },
       ],
