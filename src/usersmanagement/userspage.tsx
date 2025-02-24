@@ -1,147 +1,120 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { useGetUserByIdQuery, useUpdateUserMutation, useDeleteUserMutation } from "../features/users/usersAPI";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import {
+  useGetUserByIdQuery,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+} from "../features/users/usersAPI";
 
-import "react-toastify/dist/ReactToastify.css";
-
-// Define the structure of the token payload
-interface TokenPayload {
+interface User {
   id: number;
+  full_name: string;
+  email: string;
+  role: string;
 }
 
 const AccountPage: React.FC = () => {
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const decodedToken: any = token ? jwtDecode(token) : null;
+  const userId = decodedToken?.user_id;
 
-  // Decode token to get the logged-in user's ID
-  let userId: number | null = null;
-  if (token) {
-    try {
-      const decoded: TokenPayload = jwtDecode(token);
-      userId = decoded.id;
-    } catch (error) {
-      toast.error("Invalid session. Please log in again.");
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  }
+  const { data: user, isLoading, error } = useGetUserByIdQuery(userId, { skip: !userId });
+  const [updateUser] = useUpdateUserMutation();
+  const [deleteUser] = useDeleteUserMutation();
 
-  // Fetch user details using the decoded ID
-  const { data: user, isLoading, isError } = useGetUserByIdQuery(userId!, { skip: !userId });
-  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
-  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [formData, setFormData] = useState<User>({
+    id: 0,
+    full_name: "",
+    email: "",
+    role: "",
+  });
 
-  const [editedUser, setEditedUser] = useState({ id: 0, full_name: "", email: "", role: "" });
-
-  // Auto-fill user details when data is available
   useEffect(() => {
     if (user) {
-      setEditedUser({ id: user.id, full_name: user.full_name, email: user.email, role: user.role });
+      setFormData(user);
     }
   }, [user]);
 
-  // Handle Update
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   const handleUpdate = async () => {
     try {
-      await updateUser(editedUser).unwrap();
-      toast.success("Profile updated successfully!");
-    } catch (error) {
-      toast.error("Failed to update profile.");
+      await updateUser(formData).unwrap();
+      alert("Account updated successfully!");
+    } catch {
+      alert("Failed to update account");
     }
   };
 
-  // Handle Account Deletion
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your account? This action is irreversible!")) return;
-
-    try {
-      await deleteUser(user?.id).unwrap();
-      localStorage.removeItem("token");
-      navigate("/login");
-      toast.success("Account deleted successfully.");
-    } catch (error) {
-      toast.error("Failed to delete account.");
+    if (window.confirm("Are you sure you want to delete your account? This action is irreversible.")) {
+      try {
+        await deleteUser(userId).unwrap();
+        localStorage.removeItem("token");
+        alert("Account deleted successfully!");
+        window.location.href = "/login"; // Redirect to login page
+      } catch {
+        alert("Failed to delete account");
+      }
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return <p className="text-red-500 text-center">Failed to load profile.</p>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading account details</div>;
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-2xl font-bold mb-6 text-center">My Account</h2>
-
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-lg mx-auto">
-        <div className="mb-4">
-          <label className="block text-gray-600 font-medium mb-1">User ID</label>
-          <input
-            type="text"
-            value={editedUser.id}
-            readOnly
-            className="w-full px-3 py-2 border border-gray-300 bg-gray-200 rounded-md"
-          />
+    <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md">
+      <h2 className="text-2xl font-bold mb-4">Tenant Account Management</h2>
+      <form className="space-y-4">
+        <input
+          type="text"
+          name="full_name"
+          value={formData.full_name}
+          onChange={handleChange}
+          placeholder="Full Name"
+          className="w-full p-2 border border-gray-300 rounded"
+        />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          className="w-full p-2 border border-gray-300 rounded"
+          disabled
+        />
+        <input
+          type="text"
+          name="role"
+          value={formData.role}
+          readOnly
+          className="w-full p-2 border border-gray-300 rounded bg-gray-100"
+        />
+        <div className="flex justify-between">
+          <button
+            type="button"
+            onClick={handleUpdate}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Update Account
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Delete Account
+          </button>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-600 font-medium mb-1">Full Name</label>
-          <input
-            type="text"
-            value={editedUser.full_name}
-            onChange={(e) => setEditedUser({ ...editedUser, full_name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-600 font-medium mb-1">Email</label>
-          <input
-            type="email"
-            value={editedUser.email}
-            onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-600 font-medium mb-1">Role</label>
-          <input
-            type="text"
-            value={editedUser.role}
-            readOnly
-            className="w-full px-3 py-2 border border-gray-300 bg-gray-200 rounded-md"
-          />
-        </div>
-
-        <button
-          onClick={handleUpdate}
-          disabled={isUpdating}
-          className="w-full mt-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {isUpdating ? "Updating..." : "Update Profile"}
-        </button>
-
-        <button
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="w-full mt-4 bg-red-600 text-white py-2 rounded-md hover:bg-red-700 disabled:bg-gray-400"
-        >
-          {isDeleting ? "Deleting..." : "Delete Account"}
-        </button>
-      </div>
+      </form>
     </div>
   );
 };
 
 export default AccountPage;
+
+
