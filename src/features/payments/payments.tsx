@@ -449,13 +449,59 @@ const PaymentComponent: React.FC = () => {
   if (error) return <div className="text-center text-red-500">Error loading payments</div>;
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-white shadow-md rounded-md">
-      <h1 className="text-2xl font-bold mb-4 text-center">Payments Management</h1>
+    <div className="max-w-6xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h1 className="text-3xl font-bold mb-6 text-center">Payments Management</h1>
 
-      {/* Payment Graph (Now at the top) */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Payment Trends</h2>
-        <ResponsiveContainer width="100%" height={200}>
+      {errorMessage && <div className="text-red-500 text-center">{errorMessage}</div>}
+      {successMessage && <div className="text-green-500 text-center">{successMessage}</div>}
+
+      {/* Create Payment Section */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Create Payment</h2>
+        <input
+          type="number"
+          value={amountPaid}
+          onChange={(e) => setAmountPaid(e.target.value)}
+          placeholder="Amount Paid"
+          className="p-2 border border-gray-300 rounded-md"
+        />
+        <input
+          type="text"
+          value={paymentStatus}
+          onChange={(e) => setPaymentStatus(e.target.value)}
+          placeholder="Payment Status"
+          className="p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          onClick={handleCreatePayment}
+          className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600"
+        >
+          Create Payment
+        </button>
+      </section>
+
+      {/* All Payments Section */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">All Payments</h2>
+        {payments?.map((payment: Payment) => (
+          <div key={payment.payment_id} className="p-4 border border-gray-300 rounded-md bg-gray-50 mb-4">
+            <p><strong>ID:</strong> {payment.payment_id}</p>
+            <p><strong>Amount Paid:</strong> {payment.amount_paid}</p>
+            <p><strong>Status:</strong> {payment.payment_status}</p>
+            <button
+              onClick={() => handleDeletePayment(payment.payment_id)}
+              className="bg-red-500 text-white p-2 rounded-md hover:bg-red-600 mt-2"
+            >
+              Delete Payment
+            </button>
+          </div>
+        ))}
+      </section>
+
+      {/* Payment Graph */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Payment Trends</h2>
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart data={payments}>
             <XAxis dataKey="payment_id" />
             <YAxis />
@@ -463,59 +509,6 @@ const PaymentComponent: React.FC = () => {
             <Bar dataKey="amount_paid" fill="#8884d8" />
           </BarChart>
         </ResponsiveContainer>
-      </div>
-
-      {errorMessage && <div className="text-red-500 text-center">{errorMessage}</div>}
-      {successMessage && <div className="text-green-500 text-center">{successMessage}</div>}
-
-      {/* Create Payment Section */}
-      <section className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Create Payment</h2>
-        <div className="flex gap-2">
-          <input
-            type="number"
-            value={amountPaid}
-            onChange={(e) => setAmountPaid(e.target.value)}
-            placeholder="Amount Paid"
-            className="p-2 border border-gray-300 rounded-md w-1/3"
-          />
-          <input
-            type="text"
-            value={paymentStatus}
-            onChange={(e) => setPaymentStatus(e.target.value)}
-            placeholder="Payment Status"
-            className="p-2 border border-gray-300 rounded-md w-1/3"
-          />
-          <button
-            onClick={handleCreatePayment}
-            className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 w-1/3"
-          >
-            Create
-          </button>
-        </div>
-      </section>
-
-      {/* All Payments Section */}
-      <section>
-        <h2 className="text-lg font-semibold mb-2">All Payments</h2>
-        <div className="grid grid-cols-2 gap-2">
-          {payments?.map((payment: Payment) => (
-            <div
-              key={payment.payment_id}
-              className="p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
-            >
-              <p><strong>ID:</strong> {payment.payment_id}</p>
-              <p><strong>Amount:</strong> {payment.amount_paid}</p>
-              <p><strong>Status:</strong> {payment.payment_status}</p>
-              <button
-                onClick={() => handleDeletePayment(payment.payment_id)}
-                className="bg-red-500 text-white p-1 rounded-md hover:bg-red-600 text-xs mt-1"
-              >
-                Delete
-              </button>
-            </div>
-          ))}
-        </div>
       </section>
     </div>
   );
