@@ -14,7 +14,7 @@ interface CreatePaymentRequest {
 export const paymentAPI = createApi({
   reducerPath: 'paymentAPI',
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net',
+    baseUrl: 'https://rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net/',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -26,7 +26,7 @@ export const paymentAPI = createApi({
   endpoints: (builder) => ({
     createPayment: builder.mutation<Payment, CreatePaymentRequest>({
       query: (paymentData) => ({
-        url: '/payments/pay/',
+        url: 'payments/pay/',
         method: 'POST',
         body: paymentData,
       }),
