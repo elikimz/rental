@@ -24,7 +24,7 @@ function PropertiesPage() {
           title: "Beautiful Villa",
           description: "A spacious villa with modern amenities.",
           price: "$500,000",
-          image: "https://via.placeholder.com/300",
+          image: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/438314153.jpg?k=75bed2f32ab49352cc0e1692986f49533dc6a0827f2bbb074fb67cd6e33f3c45&o=&hp=1",
           fullDescription: "This beautiful villa offers spacious rooms, a large garden, and is located in a peaceful neighborhood. It has 4 bedrooms, 3 bathrooms, and a swimming pool."
         },
         {
@@ -32,7 +32,7 @@ function PropertiesPage() {
           title: "Luxury Apartment",
           description: "An upscale apartment in a prime location.",
           price: "$350,000",
-          image: "https://via.placeholder.com/300",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwhPsUscBte7_Sg-HnQLb0THlytruIvG1i2A&s",
           fullDescription: "This luxury apartment is located in the heart of the city with 2 bedrooms, 2 bathrooms, and an open-plan kitchen. Enjoy breathtaking views of the skyline."
         },
         {
@@ -40,7 +40,7 @@ function PropertiesPage() {
           title: "Cozy Cottage",
           description: "A peaceful cottage by the lake.",
           price: "$250,000",
-          image: "https://via.placeholder.com/300",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2qJbOyamAwJxE9fJo1xBptxE_7_g-uO2IQ&s",
           fullDescription: "This cozy cottage is perfect for a weekend getaway, featuring 2 bedrooms, 1 bathroom, and a beautiful view of the lake. Perfect for nature lovers."
         },
         // More cards
@@ -49,7 +49,7 @@ function PropertiesPage() {
           title: "Modern Loft",
           description: "A sleek and modern loft in a quiet neighborhood.",
           price: "$420,000",
-          image: "https://via.placeholder.com/300",
+          image: "https://www.urbnlivn.com/wp-content/uploads/2018/08/item_9-1.jpg",
           fullDescription: "A modern loft with 1 bedroom, 1 bathroom, and a spacious living area. Enjoy city views from your large windows. Includes a home office space."
         },
         {
@@ -57,7 +57,7 @@ function PropertiesPage() {
           title: "Charming Townhouse",
           description: "A charming townhouse with a beautiful garden.",
           price: "$320,000",
-          image: "https://via.placeholder.com/300",
+          image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSgxFx4XxE6RrepxhFJRxriaRjdrdpKUPsgg&s",
           fullDescription: "This lovely townhouse comes with 3 bedrooms, 2 bathrooms, and a private backyard. Located near great schools and parks."
         }
       ]);
