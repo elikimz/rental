@@ -1,6 +1,7 @@
+
+
 import React, { useState } from "react";
 import { useGetAllLeasesQuery, useCreateLeaseMutation } from "../features/lease/leaseAPI";
-import { useGetAllUnitsQuery } from "../features/units/unitsAPI";
 import { jwtDecode } from "jwt-decode";
 
 const LeaseManagementPage: React.FC = () => {
@@ -9,7 +10,6 @@ const LeaseManagementPage: React.FC = () => {
   const tenantId = decodedToken?.id;
 
   const { data: leases, isLoading, error, refetch } = useGetAllLeasesQuery();
-  const { data: units } = useGetAllUnitsQuery();
   const [createLease] = useCreateLeaseMutation();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -19,17 +19,16 @@ const LeaseManagementPage: React.FC = () => {
     end_date: "",
     rent_amount: "",
     deposit_amount: "",
-    unit_id: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleCreateLease = async () => {
-    if (!tenantId || !formData.unit_id) {
-      setMessage({ type: 'error', text: "Tenant ID and Unit ID are required" });
+    if (!tenantId) {
+      setMessage({ type: 'error', text: "Tenant ID not found" });
       return;
     }
 
@@ -37,19 +36,19 @@ const LeaseManagementPage: React.FC = () => {
     setMessage(null);
     try {
       await createLease({
-        tenant_id: tenantId,
-        start_date: formData.start_date,
-        end_date: formData.end_date,
-        rent_amount: Number(formData.rent_amount),
-        deposit_amount: Number(formData.deposit_amount),
-        unit_id: Number(formData.unit_id)
+          tenant_id: tenantId,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
+          rent_amount: Number(formData.rent_amount),
+          deposit_amount: Number(formData.deposit_amount),
+          unit_id: 0
       }).unwrap();
       refetch();
       setMessage({ type: 'success', text: "Lease created successfully!" });
-      setFormData({ start_date: "", end_date: "", rent_amount: "", deposit_amount: "", unit_id: "" });
-    } catch (err) {
-      const errorMessage = (err as any)?.data?.detail || "Failed to create lease";
-      setMessage({ type: 'error', text: errorMessage });
+      setFormData({ start_date: "", end_date: "", rent_amount: "", deposit_amount: "" });
+    } catch (error) {
+      console.error("Error creating lease:", error);
+      setMessage({ type: 'error', text: "Failed to create lease" });
     } finally {
       setLoading(false);
     }
@@ -99,19 +98,6 @@ const LeaseManagementPage: React.FC = () => {
           placeholder="Deposit Amount"
           className="w-full p-3 border"
         />
-        <select
-          name="unit_id"
-          value={formData.unit_id}
-          onChange={handleChange}
-          className="w-full p-3 border"
-        >
-          <option value="">Select a Unit</option>
-          {units?.map((unit: any) => (
-            <option key={unit.id} value={unit.id}>
-              {unit.name} - {unit.property_name}
-            </option>
-          ))}
-        </select>
         <button
           type="button"
           onClick={handleCreateLease}
@@ -140,3 +126,4 @@ const LeaseManagementPage: React.FC = () => {
 };
 
 export default LeaseManagementPage;
+
