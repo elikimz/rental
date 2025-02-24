@@ -16,6 +16,7 @@ import ContactPage from './pages/contact';
 import Overview from './pages/Overview';
 import TenantLayout from './components/userdashboard';
 import AccountPage from './usersmanagement/userspage';
+import PropertiePage from './usersmanagement/properties';
 
 
 const Router: React.FC = () => {
@@ -65,7 +66,7 @@ const Router: React.FC = () => {
       element: <TenantLayout />,
       children: [
       { path: 'account', element: <AccountPage/> },
-      // { path: 'property', element: <Property /> },
+      { path: 'property', element: <PropertiePage /> },
       //  { path: 'unit', element: <Unit/> },
       // { path: 'lease', element: <Lease /> },
       // { path: 'payment', element: <Payment/> },
