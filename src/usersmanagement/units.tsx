@@ -178,8 +178,8 @@ const UnitManagementPage: React.FC = () => {
     }
   };
 
-  const handleNavigateToLeasePage = (unitId: number) => {
-    navigate(`tenant-dashboard/lease/${unitId}`); // Navigate to the lease page with the unit ID
+  const handleNavigateToLeasePage = (unitId: number, leaseId: number) => {
+    navigate(`/tenant-dashboard/unit/${unitId}/lease/${leaseId}`);// Navigate to the lease page with the unit ID
   };
 
   if (isLoading) return <div>Loading units...</div>;
@@ -240,7 +240,7 @@ const UnitManagementPage: React.FC = () => {
               </button>
             )}
             <button
-              onClick={() => handleNavigateToLeasePage(unit.id)}
+              onClick={() => handleNavigateToLeasePage(unit.id,unit.leaseId)}
               className="bg-green-500 text-white px-4 py-2 rounded mt-2 hover:bg-green-600"
             >
               Lease Unit
