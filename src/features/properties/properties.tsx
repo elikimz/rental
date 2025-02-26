@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import React, { useState, useEffect } from 'react';
 // import {
@@ -398,6 +399,7 @@
 
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   useCreatePropertyMutation,
   useGetAllPropertiesQuery,
@@ -414,13 +416,9 @@ interface Property {
   description?: string;
 }
 
-interface UpdatePropertyArgs {
-  propertyId: string;
-  propertyData: Property;
-}
-
 const PropertiesPage: React.FC = () => {
-  const [propertyId, setPropertyId] = useState<string>('');
+  const navigate = useNavigate();
+  const [propertyId] = useState<string>('');
   const [, setFormData] = useState<Property>({
     id: '',
     name: '',
@@ -429,15 +427,11 @@ const PropertiesPage: React.FC = () => {
   });
   const [message] = useState<string>('');
 
-  const { data: property, refetch, isFetching, isError } = useGetPropertyByIdQuery(propertyId, { skip: !propertyId });
-  const { data: properties, refetch: refetchAllProperties, isLoading: isPropertiesLoading } = useGetAllPropertiesQuery(undefined);
-
-  // eslint-disable-next-line no-empty-pattern
-  const [] = useCreatePropertyMutation<Property>();
-  // eslint-disable-next-line no-empty-pattern
-  const [] = useUpdatePropertyMutation<UpdatePropertyArgs>();
-  // eslint-disable-next-line no-empty-pattern
-  const [] = useDeletePropertyMutation<{ id: string }>();
+  const { data: property } = useGetPropertyByIdQuery(propertyId, { skip: !propertyId });
+  const { data: properties, isLoading: isPropertiesLoading } = useGetAllPropertiesQuery(undefined);
+  const [] = useCreatePropertyMutation();
+  const [] = useUpdatePropertyMutation();
+  const [] = useDeletePropertyMutation();
 
   useEffect(() => {
     if (property) {
@@ -462,40 +456,15 @@ const PropertiesPage: React.FC = () => {
     }
   }, [properties]);
 
-
-
-
+  const handleViewUnits = (propertyId: string) => {
+    navigate(`/properties/${propertyId}/units`);
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Properties Management</h1>
       {message && <p className="text-sm text-green-500 mb-4">{message}</p>}
-
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Property ID"
-          value={propertyId}
-          onChange={(e) => setPropertyId(e.target.value)}
-          className="border p-2 mr-2 rounded w-1/2"
-        />
-        <button
-          onClick={() => refetch()}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Get Property
-        </button>
-        <button
-          onClick={() => refetchAllProperties()}
-          className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 ml-2"
-        >
-          Fetch All Properties
-        </button>
-      </div>
-
-      {isFetching && <Spinner />}
-      {isError && propertyId && <p className="text-red-500">Property not found.</p>}
-
+      
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-2">All Properties</h2>
         {isPropertiesLoading ? (
@@ -508,6 +477,12 @@ const PropertiesPage: React.FC = () => {
                 <p><strong>Name:</strong> {prop.name}</p>
                 <p><strong>Location:</strong> {prop.location}</p>
                 <p><strong>Description:</strong> {prop.description}</p>
+                <button
+                  onClick={() => handleViewUnits(prop.id)}
+                  className="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-600"
+                >
+                  View Units
+                </button>
               </li>
             ))}
           </ul>
