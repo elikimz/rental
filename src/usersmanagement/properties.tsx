@@ -49,7 +49,7 @@ const PropertiesPage: React.FC = () => {
   const { data: properties, isLoading: isPropertiesLoading } = useGetAllPropertiesQuery(undefined);
 
   const handleNavigateToUnits = (propertyId: string) => {
-    navigate(`/units/${propertyId}`); // Navigate to the Units page for the specific property
+    navigate(`/tenant-dashboard/${propertyId}`); // Navigate to the Units page for the specific property
   };
 
   return (
