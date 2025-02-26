@@ -8,7 +8,7 @@
 // import Footer from "../../components/footer";
 // import Spinner from "../../components/spinner";
 // import { useLoginUserMutation } from "./loginAPI";
-// import { Eye, EyeOff } from "react-feather"; // For show/hide password icons
+// import { Eye, EyeOff, Lock } from "react-feather"; // Added Lock icon for password field
 
 // interface FormData {
 //   email: string;
@@ -100,12 +100,15 @@
 //                 Password
 //               </label>
 //               <div className="relative">
+//                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 dark:text-gray-400">
+//                   <Lock size={18} /> {/* Padlock icon */}
+//                 </div>
 //                 <input
 //                   type={showPassword ? "text" : "password"}
 //                   name="password"
 //                   value={formData.password}
 //                   onChange={handleChange}
-//                   className="w-full px-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+//                   className="w-full px-4 py-3 pl-10 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
 //                   placeholder="Enter your password"
 //                   required
 //                 />
@@ -154,7 +157,7 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import Spinner from "../../components/spinner";
 import { useLoginUserMutation } from "./loginAPI";
-import { Eye, EyeOff, Lock } from "react-feather"; // Added Lock icon for password field
+import { Eye, EyeOff, Lock } from "react-feather";
 
 interface FormData {
   email: string;
@@ -167,7 +170,7 @@ const LoginPage: React.FC = () => {
     email: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const [loginUser, { isLoading }] = useLoginUserMutation();
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -189,12 +192,10 @@ const LoginPage: React.FC = () => {
       const token = response.access_token;
       localStorage.setItem("token", token);
 
-      // Decode token to get role
       const decodedToken: any = jwtDecode(token);
       const userRole = decodedToken.role;
       console.log("Decoded role:", userRole);
 
-      // Navigate based on role
       if (userRole === "Tenant") {
         navigate("/tenant-dashboard");
       } else if (userRole === "Admin") {
@@ -215,9 +216,9 @@ const LoginPage: React.FC = () => {
   return (
     <>
       <Navbar />
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6 sm:p-8">
-          <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-8">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#1a2a6c] via-[#b21f1f] to-[#fdbb2d]">
+        <div className="w-full max-w-md bg-white shadow-xl rounded-xl p-6 sm:p-8">
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
             Welcome Back
           </h2>
 
@@ -227,7 +228,7 @@ const LoginPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
@@ -235,33 +236,33 @@ const LoginPage: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border rounded-lg bg-gray-50 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter your email"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500 dark:text-gray-400">
-                  <Lock size={18} /> {/* Padlock icon */}
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                  <Lock size={18} />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 pl-10 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                  className="w-full px-4 py-3 pl-10 border rounded-lg bg-gray-50 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
                   placeholder="Enter your password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -277,11 +278,11 @@ const LoginPage: React.FC = () => {
             </button>
           </form>
 
-          <p className="mt-6 text-sm text-center text-gray-600 dark:text-gray-400">
+          <p className="mt-6 text-sm text-center text-gray-600">
             Don’t have an account?{" "}
             <a
               href="/register"
-              className="text-blue-600 hover:text-blue-700 dark:text-purple-400 dark:hover:text-purple-300 underline"
+              className="text-blue-600 hover:text-blue-700 underline"
             >
               Sign up
             </a>
