@@ -122,6 +122,9 @@
 // export default AccountPage;
 
 
+
+
+
 import { useGetUserByIdQuery, useUpdateUserMutation } from '../features/users/usersAPI';
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
@@ -175,12 +178,15 @@ const AccountPage: React.FC = () => {
   if (isLoading) return <div className="text-center py-8 text-blue-600 font-sans">Loading...</div>;
   if (error) return <div className="text-center py-8 text-red-500 font-sans">Error loading account details</div>;
 
+  // Extract the first name from the full name
+  const firstName = formData.full_name.split(" ")[0];
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans py-12">
       <div className="max-w-4xl mx-auto p-8 bg-white shadow-sm rounded-lg border border-gray-100">
         <ToastContainer />
         <h2 className="text-4xl font-bold text-gray-900 mb-8 flex items-center">
-          <FaUser className="mr-3 text-blue-600" /> Tenant Account Management
+          <FaUser className="mr-3 text-blue-600" /> Welcome Back, {firstName}!
         </h2>
         <form className="space-y-8">
           {formData.profile_image && (
