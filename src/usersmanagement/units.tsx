@@ -179,7 +179,7 @@ const UnitManagementPage: React.FC = () => {
   };
 
   const handleNavigateToLeasePage = (unitId: number) => {
-    navigate(`/lease/${unitId}`); // Navigate to the lease page with the unit ID
+    navigate(`tenant-dashboard/lease${unitId}`); // Navigate to the lease page with the unit ID
   };
 
   if (isLoading) return <div>Loading units...</div>;

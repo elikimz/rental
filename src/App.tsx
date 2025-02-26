@@ -80,6 +80,7 @@ const Router: React.FC = () => {
       { path: 'lease', element: <LeaseManagementPage /> },
       { path: 'payment', element: <PaymentPage/> },
       { path: 'unit/:propertyId', element: <UnitManagementPage /> }, 
+      { path: 'lease/:unitId', element: <LeaseManagementPage /> }, 
       // { path: 'support', element: <Support/> },
       // { path: 'users', element: <UserManagement/> },
       ],
