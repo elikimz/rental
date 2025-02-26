@@ -21,6 +21,7 @@ import LeaseManagementPage from './usersmanagement/lease';
 import UnitManagementPage from './usersmanagement/units';
 import PaymentPage from './features/stripe/stripe';
 import Success from './pages/success';
+import Overviews from './pages/TenantDashboard';
 
 
 const Router: React.FC = () => {
@@ -53,6 +54,10 @@ const Router: React.FC = () => {
     {
       path: '/success',
       element: <Success/>,
+    },
+    {
+      path: '/tenant-dashboard',
+      element: <Overviews/>,
     },
    
    

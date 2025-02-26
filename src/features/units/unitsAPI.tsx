@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { ReactNode } from 'react';
 
 interface Unit {
+  unit_number: ReactNode;
   id: number;
   name: string;
   status: string;
