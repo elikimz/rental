@@ -55,10 +55,6 @@ const Router: React.FC = () => {
       path: '/success',
       element: <Success/>,
     },
-    {
-      path: '/tenant-dashboard',
-      element: <Overviews/>,
-    },
    
    
     {
@@ -84,6 +80,7 @@ const Router: React.FC = () => {
       { path: 'unit', element: <UnitManagementPage/> },
       { path: 'lease', element: <LeaseManagementPage /> },
       { path: 'payment', element: <PaymentPage/> },
+      { path: 'tenant-dashboard', element: <Overviews/> },
       { path: 'unit/:propertyId', element: <UnitManagementPage /> }, 
       { path: 'unit/:unitId/lease/:leaseId', element: <LeaseManagementPage /> },
       { path: '/tenant-dashboard/unit/20/lease/undefined/tenant-dashboard/payment', element: <PaymentPage/> },
