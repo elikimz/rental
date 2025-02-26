@@ -22,6 +22,7 @@ import UnitManagementPage from './usersmanagement/units';
 import PaymentPage from './features/stripe/stripe';
 import Success from './pages/success';
 import Overviews from './pages/TenantDashboard';
+import SupportPage from './pages/support';
 
 
 const Router: React.FC = () => {
@@ -80,6 +81,7 @@ const Router: React.FC = () => {
       { path: 'unit', element: <UnitManagementPage/> },
       { path: 'lease', element: <LeaseManagementPage /> },
       { path: 'payment', element: <PaymentPage/> },
+      { path: 'support', element: <SupportPage/> },
       { path: 'tenant-dashboard', element: <Overviews/> },
       { path: 'unit/:propertyId', element: <UnitManagementPage /> }, 
       { path: 'unit/:unitId/lease/:leaseId', element: <LeaseManagementPage /> },
