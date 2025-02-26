@@ -81,8 +81,9 @@ const Router: React.FC = () => {
       { path: 'payment', element: <PaymentPage/> },
       { path: 'unit/:propertyId', element: <UnitManagementPage /> }, 
       { path: 'unit/:unitId/lease/:leaseId', element: <LeaseManagementPage /> },
+      { path: '/tenant-dashboard/unit/20/lease/undefined/tenant-dashboard/payment', element: <PaymentPage/> },
       // { path: 'support', element: <Support/> },
-      // { path: 'users', element: <UserManagement/> },
+      // { path: 'users', element: <UserManagement/> },/tenant-dashboard/unit/20/lease/undefined/tenant-dashboard/payment
       ],
     },
   ]);

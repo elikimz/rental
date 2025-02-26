@@ -177,7 +177,7 @@ const LeaseManagementPage: React.FC = () => {
       refetch();
       setMessage({ type: 'success', text: "Lease created successfully!" });
       setFormData({ start_date: "", end_date: "", rent_amount: "", deposit_amount: "" });
-      navigate("tenant-dashboard/payment"); // Navigate to the payments page after successful creation
+      navigate("/tenant-dashboard/unit/20/lease/undefined/tenant-dashboard/payment"); // Navigate to the payments page after successful creation
     } catch (error) {
       console.error("Error creating lease:", error);
       setMessage({ type: 'error', text: "Failed to create lease" });
