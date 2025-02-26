@@ -220,7 +220,7 @@ interface Property {
   name: string;
   location: string;
   description?: string;
-  imageUrl?: string;
+  image_url?: string;
 }
 
 const PropertiesPage: React.FC = () => {
@@ -230,9 +230,10 @@ const PropertiesPage: React.FC = () => {
     name: '',
     location: '',
     description: '',
-    imageUrl: '',
+    image_url: '',
   });
   const [message, setMessage] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   const { data: property, refetch, isFetching, isError } = useGetPropertyByIdQuery(propertyId, { skip: !propertyId });
   const { data: properties, refetch: refetchAllProperties, isLoading: isPropertiesLoading } = useGetAllPropertiesQuery(undefined);
@@ -247,8 +248,9 @@ const PropertiesPage: React.FC = () => {
         name: property.name,
         location: property.location,
         description: property.description || '',
-        imageUrl: property.imageUrl || '',
+        image_url: property.image_url || '',
       });
+      setImagePreview(property.image_url || '');
     }
   }, [property]);
 
@@ -267,17 +269,21 @@ const PropertiesPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === 'image_url') {
+      setImagePreview(value);
+    }
   };
 
   const handleCreateProperty = async () => {
-    if (!formData.name || !formData.location || !formData.description || !formData.imageUrl) {
+    if (!formData.name || !formData.location || !formData.description || !formData.image_url) {
       setMessage('All fields must not be empty.');
       return;
     }
     try {
       await createProperty(formData).unwrap();
       setMessage('Property created successfully!');
-      setFormData({ id: '', name: '', location: '', description: '', imageUrl: '' });
+      setFormData({ id: '', name: '', location: '', description: '', image_url: '' });
+      setImagePreview('');
       refetchAllProperties();
     } catch {
       setMessage('Failed to create property.');
@@ -299,7 +305,8 @@ const PropertiesPage: React.FC = () => {
       await deleteProperty(propertyId).unwrap();
       setMessage('Property deleted successfully!');
       setPropertyId('');
-      setFormData({ id: '', name: '', location: '', description: '', imageUrl: '' });
+      setFormData({ id: '', name: '', location: '', description: '', image_url: '' });
+      setImagePreview('');
       localStorage.removeItem(`property_${propertyId}`);
       refetchAllProperties();
     } catch {
@@ -320,7 +327,10 @@ const PropertiesPage: React.FC = () => {
           onChange={(e) => setPropertyId(e.target.value)}
           className="border p-2 mr-2 rounded w-1/2"
         />
-        <button onClick={() => refetch()} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        <button
+          onClick={() => refetch()}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
           Get Property
         </button>
         <button
@@ -346,7 +356,19 @@ const PropertiesPage: React.FC = () => {
                 <p><strong>Name:</strong> {prop.name}</p>
                 <p><strong>Location:</strong> {prop.location}</p>
                 <p><strong>Description:</strong> {prop.description}</p>
-                {prop.imageUrl && <img src={prop.imageUrl} alt={prop.name} className="mt-2 rounded max-w-full h-auto" />}
+                {prop.image_url && (
+                  <img src={prop.image_url} alt={prop.name} className="mt-2 rounded max-w-full h-auto" />
+                )}
+                <button
+                  onClick={() => {
+                    setPropertyId(prop.id);
+                    handleDeleteProperty();
+                  }}
+                  disabled={isDeleting}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 mt-2"
+                >
+                  {isDeleting ? <Spinner /> : 'Delete'}
+                </button>
               </li>
             ))}
           </ul>
@@ -355,20 +377,54 @@ const PropertiesPage: React.FC = () => {
 
       <div className="mb-6">
         <h2 className="text-xl font-semibold">Create/Update Property</h2>
-        <input type="text" name="name" placeholder="Property Name" value={formData.name} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
-        <input type="text" name="location" placeholder="Location" value={formData.location} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
-        <textarea name="description" placeholder="Property Description" value={formData.description} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded h-24" />
-        <input type="text" name="imageUrl" placeholder="Image URL" value={formData.imageUrl} onChange={handleInputChange} className="border p-2 mb-2 block w-full rounded" />
-
+        <input
+          type="text"
+          name="name"
+          placeholder="Property Name"
+          value={formData.name}
+          onChange={handleInputChange}
+          className="border p-2 mb-2 block w-full rounded"
+        />
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={formData.location}
+          onChange={handleInputChange}
+          className="border p-2 mb-2 block w-full rounded"
+        />
+        <textarea
+          name="description"
+          placeholder="Property Description"
+          value={formData.description}
+          onChange={handleInputChange}
+          className="border p-2 mb-2 block w-full rounded h-24"
+        />
+        <input
+          type="text"
+          name="image_url"
+          placeholder="Image URL"
+          value={formData.image_url}
+          onChange={handleInputChange}
+          className="border p-2 mb-2 block w-full rounded"
+        />
+        {imagePreview && (
+          <img src={imagePreview} alt="Preview" className="mt-2 rounded max-w-full h-auto" />
+        )}
         <div className="flex gap-4">
-          <button onClick={handleCreateProperty} disabled={isCreating} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          <button
+            onClick={handleCreateProperty}
+            disabled={isCreating}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
             {isCreating ? <Spinner /> : 'Create'}
           </button>
-          <button onClick={handleUpdateProperty} disabled={isUpdating} className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+          <button
+            onClick={handleUpdateProperty}
+            disabled={isUpdating}
+            className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+          >
             {isUpdating ? <Spinner /> : 'Update'}
-          </button>
-          <button onClick={handleDeleteProperty} disabled={isDeleting} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-            {isDeleting ? <Spinner /> : 'Delete'}
           </button>
         </div>
       </div>
