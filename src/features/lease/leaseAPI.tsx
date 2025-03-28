@@ -29,7 +29,7 @@ interface LeaseCreateRequest {
 export const leaseAPI = createApi({
   reducerPath: 'leaseAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net',
+    baseUrl: 'https://rentalapi-s12d.onrender.com',
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {

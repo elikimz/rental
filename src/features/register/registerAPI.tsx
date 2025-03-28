@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const registerAPI = createApi({
   reducerPath: 'registerAPI',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://rentals-dxd5gdg2c0a8dhdt.southafricanorth-01.azurewebsites.net/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://rentalapi-s12d.onrender.com/' }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (newUser) => ({
